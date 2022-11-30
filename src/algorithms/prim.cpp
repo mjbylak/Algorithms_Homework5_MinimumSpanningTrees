@@ -10,9 +10,9 @@ struct EdgeKeyComparison {
     }
 };
 
-int minIndex(std::vector<bool> Traversed, std::vector<int> distance, int numVertices){
+int minIndex(bool Traversed [], int distance [], int numVertices){
     int min = INT_MAX;
-    int minIndex = INT_MAX;
+    int minIndex = 0;
 
     for(int i = 0; i < numVertices; i++){
         if(Traversed[i] == false && distance[i] < min){
@@ -36,54 +36,51 @@ Edge contains(std::vector<Edge> list, int u,  int v){
 std::vector<Edge> constructMSTPrim(Graph G) {
     std::vector<Edge> edges = G.exportEdges(); // Graph's edges
 
+    //find the number of edges in the graph so the entire graph can be traversed
     int size = edges.size();
     
+    //create a vector of edges to store the MST
     std::vector<Edge> MST = {};
+    //boolean array of which vertices has been visited
     bool Traversed [size];
     
-    // make list of vertices
-    std::set<int> vertices = {};
-    
+    //make distance array for keeping track of cost and parent array of previous nodes
     int distance [size];
     int parent[size];
 
+    //check nearby vertices and add them 
     for(int i = 0; i < size; i++){
-        vertices.insert(edges[i].u);
-        vertices.insert(edges[i].v);
-        Traversed[i] = false;
-        distance[i] = INT_MAX;
-        parent[i] = 0;
-    }
-    
-
-    for(const int &v : vertices){
-        for(int j = 0; j < edges.size(); j++) {
-            if(edges[j].u == 0 && edges[j].v == v){
-                distance[v].assign(edges[j].w);
-                parent[v] = 0;
-            }
-            else {
-                distance[v] = INT_MAX;
-                parent[v] = -1;
-            }
+        //set adjacent vertices to appropriate distances 
+        if(edges[i].u == edges[0].v){
+            Traversed[i] = false;
+            distance[i] = edges[i].w;
+            parent[i] = edges[0].v;
+        }
+        else{
+        //otherwise set weights to infinite because they're not reachable
+            Traversed[i] = false;
+            distance[i] = INT_MAX;
+            parent[i] = -1;
         }
     }
 
-    for(int i = 1; i < vertices.size()-1; i++) {
-        int u = minIndex(Traversed[i], distance, vertices.size());
-
-        MST.push_back(Edge(parent[u], u, contains(edges, parent[u], u).w));
-        Traversed[u] = true;
-
-        for(int v = 0; v > vertices.size(); v++){
-            Edge travelled = contains(edges,u,v);
-            if(travelled.w != -1 && travelled.w < distance[v] && !Traversed[v]){
-                distance[v] = travelled.w;
-                parent[v] = travelled.u;
+    //for all edges, find the minimum distance to the next vertex
+    for(int i = 0; i < size; i++){
+        int min = minIndex(Traversed, distance, size);
+        Edge edge = contains(edges, parent[min], min);
+        if(edge.u != -1){
+            MST.push_back(edge);
+        }
+        Traversed[min] = true;
+        for(int j = 0; j < size; j++){
+            Edge edge2 = contains(edges, min, j);
+            if(Traversed[j] == false && edge2.u != -1 && distance[j] > edge2.w){
+                distance[j] = edge2.w;
+                parent[j] = edge2.u;
             }
         }
     }
-    
+        
     return MST;
 }
  
