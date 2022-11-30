@@ -41,6 +41,7 @@ std::vector<Edge> constructMSTPrim(Graph G) {
     
     //create a vector of edges to store the MST
     std::vector<Edge> MST = {};
+    
     //boolean array of which vertices has been visited
     bool Traversed [size];
     
