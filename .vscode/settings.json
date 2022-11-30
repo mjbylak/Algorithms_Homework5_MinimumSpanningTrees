@@ -35,6 +35,7 @@
         "typeinfo": "cpp",
         "utility": "cpp",
         "map": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "set": "cpp"
     }
 }
