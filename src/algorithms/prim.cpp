@@ -2,7 +2,7 @@
 #include <sort.hpp> 
 #include <disjoint_set.hpp>
 #include <queue>
-#include<set>
+#include <set>
 
 struct EdgeKeyComparison {
     constexpr bool operator()(const Edge &a, const Edge &b) const noexcept {
