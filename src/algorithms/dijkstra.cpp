@@ -1,6 +1,6 @@
 #include <graph.hpp>
 #include <queue>
-#include <set>
+#include <graph.hpp>
 
 struct EdgeKeyComparison {
     constexpr bool operator()(const Edge &a, const Edge &b) const noexcept {
@@ -9,49 +9,44 @@ struct EdgeKeyComparison {
 };
 
 std::vector<int> searchShortestPath(Graph &G, int start, int destination) {
-    std::vector<Edge> edges = G.exportEdges(); // Graph's edges
-    //create size variable of the number of edges in the graph
-    int size = edges.size();
-    //declare integer array for distance
-    int distance [size];
-    distance[start] = 0;
+    G.distance(start) = 0;
 
-    //declare integer array for parents
-    int parents [size];
-    // parent[start] ← -1
-    parents[start] = -1;
+    std::vector<int> path = {};
 
-    //make set of all vertices in graph
-    std::set<int> vertices;
-    for(int i = 0; i < size; i++){
-        vertices.insert(edges[i].v);
-        vertices.insert(edges[i].u);
+    int v = start;
+
+    for(int i = 0; i < G.n; i++) {
+        int min = INT_MAX;
+
+        for(int j = 0; j < G.n; j++) {
+
+            if(G.distance(j) < min && !G.isVisited(j)) {
+                min = j;
+                v = j;
+            }
+
+        }
+
+        G.setVisited(v);
+
+        if(v == destination)
+            break;
+
+        for(int i = 0; i < G.e[v].size(); i++) {
+            int neighbor = G.e[v][i].v;
+            int cost = G.e[v][i].w + G.distance(v);
+
+            if(cost < G.distance(neighbor)) {
+                G.distance(neighbor) = cost;
+                G.setTrace(neighbor, v);
+            }
+        }
     }
 
-    for(int i = 0; i < size; i++){
-        std::cout<<vertices[i];
+    while(v != -1) {
+        path.emplace(path.begin(), v);
+        v = G.trace(v);
     }
 
-    // for i from 1 to |V| do
-    for(int i = 1; i < size; i++){
-        
-    }
-    // u ← argmin
-    // ! ∈ # &'( ) *+ ',- )*+*-.(
-    // distance[u]
-    // visited[u] ← True
-    // Break if v is a destination
-    // for each vertex v in the adjacency list of u do
-    // if distance[u] + w(u, v) < distance[v] then
-    // distance[v] ← distance[u] + w(u, v) and parent[v] ← u
-
-    // Path ← { }
-    std::vector<int> Path;
-
-    // u ← destination
-    // while u ≠ -1 do
-    // Path ← { u } ∪ Path
-    // u ← parent[u]
-    // end do
-    return Path;
+    return path;
 }
